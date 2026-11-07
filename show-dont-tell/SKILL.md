@@ -31,11 +31,24 @@ Mindmaps cannot express cross-links; if relationships *between* branches matter,
 
 ## 3. Draw it so it reads at a glance
 
-- Aim for ≤ 20–25 nodes. If it needs more, make an overview diagram plus one detail diagram per dense region (separate notes), and say so.
-- Use the conversation's real names (functions, files, terms we used). Short node labels; put the "why" on edge labels.
-- Use `subgraph` to group by component/phase when it clarifies.
-- Quote labels containing special characters: `A["parse(input)"]`.
-- Every node should earn its place — this is a distillation, not a transcript.
+These principles apply to every type; the table maps them onto each type's own constructs.
+
+- **Keep it small.** Roughly 20–25 elements. If it needs more, make an overview diagram plus one detail diagram per dense region (separate notes), and say so.
+- **Use real names.** The conversation's actual functions, files, services and terms. Keep labels short.
+- **Put the "why" on the connections**, not crammed into the elements.
+- **Group** by component or phase when it clarifies.
+- **Every element earns its place.** This is a distillation, not a transcript.
+
+| Type | Elements (count these) | Connections / the "why" | Grouping & annotation |
+|---|---|---|---|
+| `flowchart` | nodes | edge labels `A -- reason --> B` | `subgraph` |
+| `sequenceDiagram` | participants (≤ ~7) and messages | message text | `box` around participants; `alt`/`opt`/`loop`/`par` blocks; `Note over` |
+| `stateDiagram-v2` | states | transition labels | composite states; `note` |
+| `mindmap` | nodes (depth ≤ 3–4) | — (tree only) | branch structure itself |
+| `erDiagram` / `classDiagram` | entities / classes (show only relevant fields) | relationship labels, cardinality | `namespace` (class) |
+| `timeline` | events | — | `section` |
+
+Quote labels containing special characters: `A["parse(input)"]`.
 
 ## 4. Save it
 

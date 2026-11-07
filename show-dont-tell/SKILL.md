@@ -26,6 +26,7 @@ The user wants a picture instead of a wall of text. Request: `$ARGUMENTS`
 | Lifecycle, modes, transitions | `stateDiagram-v2` |
 | Data model, entities and relationships | `erDiagram` / `classDiagram` |
 | Events over time | `timeline` |
+| Recap of the session itself (what happened, what led to what) | `flowchart TD` in time order, colored by kind (see Group below) |
 
 Mindmaps cannot express cross-links; if relationships *between* branches matter, use a flowchart.
 
@@ -37,7 +38,7 @@ These principles apply to every type; the table maps them onto each type's own c
 - **Overviews show the backbone, not every link.** Collapse each region into one element and keep only the main connections between regions. Cross-links make long crossing edges that no layout direction fixes, so leave them to the detail notes. If both TD and LR look bad, cut links before fiddling with direction.
 - **Use real names.** The conversation's actual functions, files, services and terms. Keep labels short.
 - **Put the "why" on the connections**, not crammed into the elements.
-- **Group** by component or phase when it clarifies.
+- **Group** by component or phase when it clarifies. But if the diagram tells a story in time order (a session recap, an investigation), grouping by kind pulls elements out of order and tangles the edges. Keep time order and show the kind with `classDef` colors instead, and give the color key in the note's caption, since mermaid has no legend.
 - **Every element earns its place.** This is a distillation, not a transcript.
 
 | Type | Elements (count these) | Connections / the "why" | Grouping & annotation |

@@ -34,6 +34,7 @@ Mindmaps cannot express cross-links; if relationships *between* branches matter,
 These principles apply to every type; the table maps them onto each type's own constructs.
 
 - **Keep it small.** Roughly 20–25 elements. If it needs more, make an overview diagram plus one detail diagram per dense region (separate notes), and say so.
+- **Overviews show the backbone, not every link.** Collapse each region into one element and keep only the main connections between regions. Cross-links make long crossing edges that no layout direction fixes, so leave them to the detail notes. If both TD and LR look bad, cut links before fiddling with direction.
 - **Use real names.** The conversation's actual functions, files, services and terms. Keep labels short.
 - **Put the "why" on the connections**, not crammed into the elements.
 - **Group** by component or phase when it clarifies.
@@ -48,7 +49,10 @@ These principles apply to every type; the table maps them onto each type's own c
 | `erDiagram` / `classDiagram` | entities / classes (show only relevant fields) | relationship labels, cardinality | `namespace` (class) |
 | `timeline` | events | — | `section` |
 
-Quote labels containing special characters: `A["parse(input)"]`.
+Special characters:
+
+- In node labels, quote anything with punctuation: `A["parse(input); retry"]`.
+- In sequence-diagram message and note text, quoting doesn't help, and a bare `;` ends the statement and breaks the render. Write it as `#59;` (renders as `;`), or rephrase with a comma or dash.
 
 ## 4. Save it
 

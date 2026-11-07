@@ -19,4 +19,10 @@ Notes go to `$SHOW_DONT_TELL_DIR`, or `./diagrams` in the working directory if u
 "env": { "SHOW_DONT_TELL_DIR": "/path/to/vault/show-dont-tell" }
 ```
 
+### Obsidian: full-width diagrams
+
+Obsidian's readable line length clips wide diagrams. Notes carry `cssclasses: [show-dont-tell]`; copy `obsidian/show-dont-tell.css` to `<vault>/.obsidian/snippets/` and enable it (Settings → Appearance → CSS snippets) so those diagrams use the full pane width and scale to fit. Other notes are unaffected.
+
+### PDFs
+
 The note is the durable artifact. The PDF is a throwaway preview rendered to Claude's session scratchpad (or `$TMPDIR/show-dont-tell/`); ask to keep it and it goes in a `pdf/` subfolder next to the note instead.

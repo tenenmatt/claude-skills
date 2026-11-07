@@ -68,7 +68,7 @@ Write `<dir>/YYYY-MM-DD <Short Title>.md` (create the directory if needed) as:
 ````markdown
 ---
 tags: [diagram, show-dont-tell]
-source: <working directory>
+cssclasses: [show-dont-tell]
 created: YYYY-MM-DD
 ---
 <One or two sentences: what this shows and what prompted it.>

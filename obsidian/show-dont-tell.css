@@ -1,0 +1,11 @@
+/* show-dont-tell: in notes with `cssclasses: [show-dont-tell]`, let mermaid
+   diagrams use the full pane width and scale down to fit instead of clipping. */
+.show-dont-tell.markdown-source-view.mod-cm6.is-readable-line-width .cm-content > .cm-lang-mermaid,
+.show-dont-tell.markdown-preview-view.is-readable-line-width .markdown-preview-sizer > div:has(> .block-language-mermaid) {
+  width: var(--max-width) !important;
+  max-width: var(--max-width) !important;
+}
+.show-dont-tell .mermaid svg {
+  max-width: 100% !important;
+  height: auto !important;
+}

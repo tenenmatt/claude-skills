@@ -5,6 +5,8 @@
 - **In the Claude app** (web, desktop, mobile): draws it inline in the conversation, next to the discussion it illustrates, and offers to save it as a note.
 - **In Claude Code:** saves it as a markdown note, renders a PDF, and opens it.
 
+For diagrams drawn without the command, see [show-dont-tell-auto](../show-dont-tell-auto/).
+
 Deciding what to draw and how to keep it readable is shared; only delivery differs. Delivery is chosen by what the session can do (inline visuals vs. a shell in your working directory), with the Code steps in `references/claude-code.md`.
 
 With no argument it distills the discussion, asking first if there's more than one plausible thread.

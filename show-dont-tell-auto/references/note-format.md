@@ -1,0 +1,1 @@
+../../show-dont-tell/references/note-format.md

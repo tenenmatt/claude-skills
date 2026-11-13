@@ -1,10 +1,27 @@
 # show-dont-tell
 
-A Claude Code skill: `/show-dont-tell [what to draw]` turns the current discussion (or a named part of it) into a mermaid diagram, saves it as a markdown note, renders a PDF, and opens it.
+`/show-dont-tell [what to draw]` turns the current discussion (or a named part of it) into a mermaid diagram.
+
+- **In the Claude app** (web, desktop, mobile): draws it inline in the conversation, next to the discussion it illustrates, and offers to save it as a note.
+- **In Claude Code:** saves it as a markdown note, renders a PDF, and opens it.
+
+Deciding what to draw and how to keep it readable is shared; only delivery differs. Delivery is chosen by what the session can do (inline visuals vs. a shell in your working directory), with the Code steps in `references/claude-code.md`.
 
 With no argument it distills the discussion, asking first if there's more than one plausible thread.
 
 ## Install
+
+### Claude app
+
+Zip the skill folder and upload it under Customize → Skills:
+
+```bash
+cd /path/to/claude-skills && zip -r show-dont-tell.zip show-dont-tell
+```
+
+Skills on your Claude account also sync (one way) into Claude Code when you're signed in with the same account. So if you upload it, **remove the `~/.claude/skills` symlink below**, or Code will load two copies. The repo stays the source of truth: re-zip and re-upload after changes.
+
+### Claude Code only
 
 From the repo root:
 

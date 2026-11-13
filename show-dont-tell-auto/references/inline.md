@@ -1,1 +1,0 @@
-../../show-dont-tell/references/inline.md

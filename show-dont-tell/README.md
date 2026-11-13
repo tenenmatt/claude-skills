@@ -2,14 +2,21 @@
 
 `/show-dont-tell [what to draw]` turns the current discussion (or a named part of it) into a mermaid diagram.
 
-- **In the Claude app** (web, desktop, mobile): draws it inline in the conversation, next to the discussion it illustrates, and offers to save it as a note.
-- **In Claude Code:** saves it as a markdown note, renders a PDF, and opens it.
-
-For diagrams drawn without the command, see [show-dont-tell-auto](../show-dont-tell-auto/).
+- **In the Claude app** (web, desktop, mobile): draws it inline in the conversation, next to the discussion it illustrates, and offers to save it as a note. It also draws on its own when a longer discussion would benefit — see *Proactive diagrams* below.
+- **In Claude Code:** saves it as a markdown note, renders a PDF, and opens it — only when you run the command. It never draws proactively in Code, since that would write files and open PDFs unasked.
 
 Deciding what to draw and how to keep it readable is shared; only delivery differs. Delivery is chosen by what the session can do (inline visuals vs. a shell in your working directory), with the Code steps in `references/claude-code.md`.
 
 With no argument it distills the discussion, asking first if there's more than one plausible thread.
+
+## Proactive diagrams
+
+In the app, the skill draws unprompted when a discussion has built up structure that's easier to see than read — about one diagram per thread by default. To tune it without changing the skill, add a line to your personal preferences in Claude's settings:
+
+- `Proactive diagrams: off` — only draw when asked (`/show-dont-tell` still works)
+- `Proactive diagrams: rare` / `often` / `only for architecture and flows`
+
+Saying "fewer diagrams" or "stop drawing" in a conversation stops it for the rest of that conversation. Rules are in `references/proactive.md`.
 
 ## Install
 

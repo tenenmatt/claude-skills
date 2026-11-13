@@ -1,19 +1,21 @@
 ---
 name: show-dont-tell
-description: Turn the current discussion (or a named aspect of it) into a mermaid diagram — drawn inline in a chat conversation, or saved as a markdown note and rendered to PDF in Claude Code. Use only when the user invokes /show-dont-tell.
+description: Turn the current discussion (or a named aspect of it) into a mermaid diagram — drawn inline in the Claude app, or saved as a markdown note and rendered to PDF in Claude Code. Use when the user runs /show-dont-tell or asks for a diagram of the discussion. Also use proactively, but only where diagrams render inline in the conversation (the Claude app, not Claude Code), when a longer discussion reaches a point where a picture would reinforce the text — a flow or pipeline, how parts of a system interact, a lifecycle, a set of related concepts, or a recap after a long stretch. Not for quick Q&A, writing tasks, or personal conversations.
 argument-hint: "[what to draw, e.g. 'the current execution flow']"
-disable-model-invocation: true
 ---
 
 # Show, don't tell
 
-The user wants a picture instead of a wall of text. Request: `$ARGUMENTS`
+A picture instead of a wall of text. Request: `$ARGUMENTS`
 
 (If that reads literally as `$ARGUMENTS`, this environment doesn't substitute it: the request is whatever the user wrote alongside the invocation, possibly nothing.)
 
-Steps 1–3 decide and draw the diagram and apply everywhere. Step 4 delivers it, and differs by environment.
+## 0. Invoked or proactive?
 
-For proactive diagrams without the command, see the companion skill `show-dont-tell-auto`; this one runs only when invoked.
+- **Invoked** — the user ran `/show-dont-tell` or asked for a diagram: follow steps 1–4.
+- **Proactive** — you're drawing on your own initiative. **Only if you can render visuals inline in the conversation and have no shell in the user's working directory.** In Claude Code, don't draw proactively at all: delivery there writes files into the project and opens a PDF, which nobody should get unasked; the user runs `/show-dont-tell` when they want one. Where proactive drawing is allowed, read `references/proactive.md` for when and how often, then follow steps 2–3 and render inline.
+
+Steps 1–3 decide and draw the diagram and apply everywhere. Step 4 delivers it, and differs by environment.
 
 ## 1. Decide what to draw — or ask
 

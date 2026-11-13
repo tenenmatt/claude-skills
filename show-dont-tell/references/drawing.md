@@ -1,6 +1,6 @@
 # Drawing the diagram
 
-Shared by `show-dont-tell` and `show-dont-tell-auto`: which mermaid type to use and how to keep it readable.
+Which mermaid type to use and how to keep it readable — for invoked and proactive diagrams alike.
 
 ## Pick the diagram type from the shape of the content
 

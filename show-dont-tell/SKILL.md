@@ -1,6 +1,6 @@
 ---
 name: show-dont-tell
-description: Turn the current discussion (or a named aspect of it) into a mermaid diagram, saved as a markdown note and rendered to PDF. Use only when the user invokes /show-dont-tell.
+description: Turn the current discussion (or a named aspect of it) into a mermaid diagram — drawn inline in a chat conversation, or saved as a markdown note and rendered to PDF in Claude Code. Use only when the user invokes /show-dont-tell.
 argument-hint: "[what to draw, e.g. 'the current execution flow']"
 disable-model-invocation: true
 ---
@@ -9,11 +9,15 @@ disable-model-invocation: true
 
 The user wants a picture instead of a wall of text. Request: `$ARGUMENTS`
 
+(If that reads literally as `$ARGUMENTS`, this environment doesn't substitute it: the request is whatever the user wrote alongside the invocation, possibly nothing.)
+
+Steps 1–3 decide and draw the diagram and apply everywhere. Step 4 delivers it, and differs by environment.
+
 ## 1. Decide what to draw — or ask
 
 - **With an argument:** draw that, grounded in what this conversation has actually covered (code read, decisions made, concepts discussed). If the argument doesn't map onto anything in the conversation, or could mean several different things, ask — don't guess.
-- **Without an argument:** distill the discussion. If it has one dominant thread, proceed and state the scope in one line ("Drawing: how the retry logic interacts with the queue, as a flowchart"). If there are several plausible threads, ask with AskUserQuestion, offering each thread as an option.
-- The user may say not to open the result ("don't open it", "no pdf"); honor that.
+- **Without an argument:** distill the discussion. If it has one dominant thread, proceed and state the scope in one line ("Drawing: how the retry logic interacts with the queue, as a flowchart"). If there are several plausible threads, ask with AskUserQuestion (or in plain text if that tool isn't available), offering each thread as an option.
+- The user may say not to open or save the result ("don't open it", "no pdf", "just show me"); honor that.
 
 ## 2. Pick the diagram type from the shape of the content
 
@@ -55,15 +59,34 @@ Special characters:
 - In node labels, quote anything with punctuation: `A["parse(input); retry"]`.
 - In sequence-diagram message and note text, quoting doesn't help, and a bare `;` ends the statement and breaks the render. Write it as `#59;` (renders as `;`), or rephrase with a comma or dash.
 
-## 4. Save it
 
-Resolve the output directory:
+## 4. Deliver it
 
-```bash
-echo "${SHOW_DONT_TELL_DIR:-$PWD/diagrams}"
-```
+Choose by what this session can actually do, not by product name:
 
-Write `<dir>/YYYY-MM-DD <Short Title>.md` (create the directory if needed) as:
+- **You can render visuals inline in the conversation** (an inline SVG/HTML widget tool — e.g. the Claude app on web, desktop or mobile) **and have no shell in the user's working directory:** follow **Inline** below.
+- **You have a shell in the user's working directory** (Claude Code): follow `references/claude-code.md` — save the note, render a PDF, check it, open it.
+- **Neither:** give the mermaid source in a fenced ` ```mermaid ` block and say in one line that it renders in Obsidian, GitHub, or mermaid.live.
+
+### Inline
+
+The point here is that the picture sits next to the discussion it illustrates.
+
+1. Write the mermaid source first, exactly as you would for the note — the same diagram types and rules from steps 2–3 apply.
+2. Render it with the inline-visual tool, as HTML that loads mermaid from a CDN the tool allows and renders that source. Follow the tool's own guidance for loading libraries, theming (light and dark) and fonts; read that guidance first if the tool asks you to. Don't hand-redraw the diagram as custom SVG: keeping it mermaid keeps it consistent with Claude Code and lets the source be saved as a note unchanged.
+3. Check it. If it renders an error or is unreadable (overlapping labels, far too wide to read at chat width), fix the source — direction, grouping, splitting into overview + detail — and render again. Chat width is narrow, so prefer `TD` over `LR` unless the content is a short linear pipeline.
+4. Iterating in the same conversation ("collapse the auth part", "make it LR") means re-rendering the revised diagram, not explaining the change.
+
+Don't write files unless asked. Then offer once, in one line, to keep it:
+
+- If a folder on the user's computer is connected (e.g. their Obsidian vault), offer to save it there as a note in the format below.
+- Otherwise offer the mermaid source as a `.md` file in that format, which they can drop into their vault.
+
+Finish with at most one line on what was drawn. Don't re-explain the diagram in prose — that's the point.
+
+### Note format
+
+Used whenever the diagram is saved, in any environment. Name it `YYYY-MM-DD <Short Title>.md`:
 
 ````markdown
 ---
@@ -78,24 +101,4 @@ created: YYYY-MM-DD
 ```
 ````
 
-When iterating on a diagram from this conversation ("collapse the auth part", "make it LR"), overwrite the same note rather than creating a new one.
-
-## 5. Render, check, open
-
-The note is the durable artifact; the PDF is a disposable preview. Render it somewhere ephemeral, not next to the note:
-
-- your session scratchpad directory, if the system prompt gives you one;
-- otherwise `${TMPDIR:-/tmp}/show-dont-tell/`.
-
-Only if the user asks to keep the PDF, render it to `<dir>/pdf/` instead.
-
-```bash
-mkdir -p "<pdf dir>"
-"${CLAUDE_SKILL_DIR}/scripts/render.sh" "<note>.md" "<pdf dir>/<same name>.pdf"
-```
-
-- On a syntax error, fix the mermaid and re-render. Don't hand over a broken diagram.
-- Read the PDF to check it is legible (no overlapping labels, not absurdly wide). If it's poor, adjust direction/grouping/splitting and re-render.
-- Then `open` the PDF (unless told not to).
-
-Finish with one line: what was drawn and the note's path. Don't re-explain the diagram in prose — that's the point.
+When iterating on a diagram already saved in this conversation, overwrite the same note rather than creating a new one.

@@ -4,7 +4,7 @@ Skills for Claude — the Claude app and [Claude Code](https://claude.com/claude
 
 | Skill | What it does |
 |---|---|
-| [show-dont-tell](show-dont-tell/) | `/show-dont-tell [what to draw]` turns the current discussion into a mermaid diagram — inline in the Claude app; saved as a markdown note and rendered to PDF in Claude Code. |
+| [show-dont-tell](show-dont-tell/) | `/show-dont-tell [what to draw]` turns the current discussion into a mermaid diagram — inline in the Claude app (also proactively, if you like); saved as a markdown note and rendered to PDF in Claude Code. |
 
 ## Install
 

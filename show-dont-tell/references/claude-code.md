@@ -10,7 +10,7 @@ Resolve the output directory:
 echo "${SHOW_DONT_TELL_DIR:-$PWD/diagrams}"
 ```
 
-Write `<dir>/YYYY-MM-DD <Short Title>.md` (create the directory if needed) in the note format from SKILL.md, step 4.
+Write `<dir>/YYYY-MM-DD <Short Title>.md` (create the directory if needed) in the format from `note-format.md`.
 
 ## Render, check, open
 

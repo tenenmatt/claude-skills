@@ -1,0 +1,66 @@
+name: Build skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate and zip skills
+        run: |
+          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          scripts/build-skills.sh dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skills-${{ github.sha }}
+          path: dist/
+          retention-days: 30
+
+  release:
+    # Rolling "latest" release, rebuilt from every push to main.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release-latest
+      cancel-in-progress: true
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: skills-${{ github.sha }}
+          path: dist
+
+      - name: Publish the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          short="${GITHUB_SHA:0:7}"
+          {
+            echo "Built from [\`$short\`](https://github.com/$GH_REPO/commit/$GITHUB_SHA) on \`main\`."
+            echo
+            echo "Each zip holds one skill folder. Upload it in the Claude app under **Customize → Skills**."
+            echo "Direct links: \`https://github.com/$GH_REPO/releases/latest/download/<skill>.zip\`"
+            echo
+            echo '```'
+            cat dist/SHA256SUMS
+            echo '```'
+          } > notes.md
+          gh release delete latest --cleanup-tag --yes 2>/dev/null || true
+          gh release create latest dist/*.zip dist/SHA256SUMS \
+            --target "$GITHUB_SHA" \
+            --title "Latest skills ($short)" \
+            --notes-file notes.md \
+            --latest

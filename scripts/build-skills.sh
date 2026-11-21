@@ -51,7 +51,7 @@ for name in "${skills[@]}"; do
   find "$stage/$name" -type d -exec chmod 755 {} +
   find "$stage/$name" -type f -exec chmod 644 {} +
   find "$stage/$name" -type f -path '*/scripts/*' -exec chmod 755 {} +
-  find "$stage/$name" -exec touch -h -t "$stamp" {} +
+  find "$stage/$name" -exec env TZ=UTC touch -h -t "$stamp" {} +
   (cd "$stage" && find "$name" -print | LC_ALL=C sort | TZ=UTC zip -q -X -@ "$out/$name.zip")
   echo "built $name.zip"
 done

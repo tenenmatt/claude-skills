@@ -1,5 +1,7 @@
 name: Build skills
 
+# Pull requests: build and attach the zips to the run (not published).
+# Pushes to main and manual runs on main: also update the "latest" release.
 on:
   push:
     branches: [main]
@@ -14,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history: each skill's zip is stamped with its own last commit
 
       - name: Validate and zip skills
-        run: |
-          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
-          scripts/build-skills.sh dist
+        run: scripts/build-skills.sh dist
 
       - uses: actions/upload-artifact@v4
         with:
@@ -27,7 +29,6 @@ jobs:
           retention-days: 30
 
   release:
-    # Rolling "latest" release, rebuilt from every push to main.
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
@@ -35,32 +36,49 @@ jobs:
       contents: write
     concurrency:
       group: release-latest
-      cancel-in-progress: true
+      cancel-in-progress: false # never cut a run off mid-update; newer runs queue
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: skills-${{ github.sha }}
           path: dist
 
-      - name: Publish the latest release
+      # Install links use releases/download/latest/<skill>.zip, which follows the
+      # *tag* named "latest". (releases/latest/download/... instead follows whichever
+      # release GitHub marks as latest, which a future release like v1 would take over.)
+      - name: Update the latest release in place
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
+          set -euo pipefail
           short="${GITHUB_SHA:0:7}"
           {
             echo "Built from [\`$short\`](https://github.com/$GH_REPO/commit/$GITHUB_SHA) on \`main\`."
             echo
             echo "Each zip holds one skill folder. Upload it in the Claude app under **Customize → Skills**."
-            echo "Direct links: \`https://github.com/$GH_REPO/releases/latest/download/<skill>.zip\`"
+            echo "Direct links: \`https://github.com/$GH_REPO/releases/download/latest/<skill>.zip\`"
             echo
             echo '```'
             cat dist/SHA256SUMS
             echo '```'
           } > notes.md
-          gh release delete latest --cleanup-tag --yes 2>/dev/null || true
-          gh release create latest dist/*.zip dist/SHA256SUMS \
-            --target "$GITHUB_SHA" \
-            --title "Latest skills ($short)" \
-            --notes-file notes.md \
-            --latest
+
+          # Point the tag at this commit (create it on the first run).
+          if gh api "repos/$GH_REPO/git/refs/tags/latest" --silent 2>/dev/null; then
+            gh api -X PATCH "repos/$GH_REPO/git/refs/tags/latest" -f sha="$GITHUB_SHA" -F force=true --silent
+          else
+            gh api "repos/$GH_REPO/git/refs" -f ref=refs/tags/latest -f sha="$GITHUB_SHA" --silent
+          fi
+
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest dist/*.zip dist/SHA256SUMS --clobber
+            # Drop assets for skills that were removed or renamed.
+            for asset in $(gh release view latest --json assets --jq '.assets[].name'); do
+              [[ -e "dist/$asset" ]] || gh release delete-asset latest "$asset" --yes
+            done
+            gh release edit latest --title "Latest skills ($short)" --notes-file notes.md --latest
+          else
+            gh release create latest dist/*.zip dist/SHA256SUMS \
+              --verify-tag --title "Latest skills ($short)" --notes-file notes.md --latest
+          fi

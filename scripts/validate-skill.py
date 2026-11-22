@@ -3,7 +3,7 @@
 
 Usage: validate-skill.py <skill-dir>   (exit 1 with a message per problem)
 
-Kept dependency-free, so frontmatter values must be single-line (no YAML block scalars).
+Kept dependency-free, so name and description must each be on a single line.
 """
 import re
 import sys
@@ -20,29 +20,35 @@ def frontmatter(text):
         return None
     for i, line in enumerate(lines[1:], start=1):
         if line.strip() == "---":
-            fields = {}
+            fields, continued = {}, set()
+            key = None
             for raw in lines[1:i]:
                 m = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", raw)
                 if m:
+                    key = m.group(1)
                     value = m.group(2).strip()
                     if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
                         value = value[1:-1]
-                    fields[m.group(1)] = value
-            return fields
-    return None
+                    fields[key] = value
+                elif raw.strip() and raw[0] in " \t" and key and not raw.lstrip().startswith("-"):
+                    continued.add(key)  # indented line: the value spills onto more lines
+            return fields, continued
+    return None, None
 
 
 def check(skill_dir):
     skill_dir = Path(skill_dir)
     where = f"{skill_dir.name}/SKILL.md"
     problems = []
-    fm = frontmatter((skill_dir / "SKILL.md").read_text(encoding="utf-8"))
+    fm, continued = frontmatter((skill_dir / "SKILL.md").read_text(encoding="utf-8"))
     if fm is None:
         return [f"{where}: no frontmatter (needs to start with a --- block)"]
 
     name = fm.get("name", "")
     if not name:
         problems.append(f"{where}: missing 'name'")
+    elif "name" in continued:
+        problems.append(f"{where}: write the name on one line")
     else:
         if name != skill_dir.name:
             problems.append(f"{where}: name '{name}' doesn't match its folder '{skill_dir.name}'")
@@ -57,12 +63,12 @@ def check(skill_dir):
     desc = fm.get("description", "")
     if not desc:
         problems.append(f"{where}: missing 'description'")
-    elif desc in ("|", ">", "|-", ">-"):
-        problems.append(f"{where}: write the description on one line (block scalars aren't supported here)")
+    elif desc in ("|", ">", "|-", ">-") or "description" in continued:
+        problems.append(f"{where}: write the description on one line (multi-line values aren't supported here)")
     else:
         if len(desc) > DESCRIPTION_MAX:
             problems.append(f"{where}: description is {len(desc)} characters (max {DESCRIPTION_MAX})")
-        if re.search(r"<[^>]*>", desc):
+        if re.search(r"</?[A-Za-z][^>]*>", desc):
             problems.append(f"{where}: description can't contain XML/HTML tags")
     return problems
 

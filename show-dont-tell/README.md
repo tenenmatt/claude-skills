@@ -22,13 +22,9 @@ Saying "fewer diagrams" or "stop drawing" in a conversation stops it for the res
 
 ### Claude app
 
-Zip the skill folder and upload it under Customize → Skills:
+Download [`show-dont-tell.zip`](https://github.com/tenenmatt/claude-skills/releases/download/latest/show-dont-tell.zip) from the latest release and upload it under Customize → Skills.
 
-```bash
-cd /path/to/claude-skills && zip -r show-dont-tell.zip show-dont-tell
-```
-
-Skills on your Claude account also sync (one way) into Claude Code when you're signed in with the same account. So if you upload it, **remove the `~/.claude/skills` symlink below**, or Code will load two copies. The repo stays the source of truth: re-zip and re-upload after changes.
+Skills on your Claude account also sync (one way) into Claude Code when you're signed in with the same account. So if you upload it, **don't also use the `~/.claude/skills` symlink below**, or Code will load two copies. To update, download the new zip after changes land on `main` and upload it again.
 
 ### Claude Code only
 

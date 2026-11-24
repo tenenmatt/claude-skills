@@ -23,7 +23,7 @@ Only if the user asks to keep the PDF, render it to `<dir>/pdf/` instead.
 
 ```bash
 mkdir -p "<pdf dir>"
-"${CLAUDE_SKILL_DIR}/scripts/render.sh" "<note>.md" "<pdf dir>/<same name>.pdf"
+bash "${CLAUDE_SKILL_DIR}/scripts/render.sh" "<note>.md" "<pdf dir>/<same name>.pdf"
 ```
 
 - On a syntax error, fix the mermaid and re-render. Don't hand over a broken diagram.
